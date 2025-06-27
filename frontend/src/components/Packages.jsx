@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
+import * as jwt from 'jwt-decode'; // named import
 import {
   Box,
   Grid,
@@ -11,15 +12,31 @@ import {
   Button,
 } from '@mui/material';
 
-const Package = ({ userId }) => {
-  const handlePayment = async (amount, bulkMailCount) => {
+const Package = () => {
+   const userId = useMemo(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+
+    try {
+      const decoded = jwt.jwtDecode(token);
+      console.log("This is ",decoded)
+      return decoded.sub || decoded.user_id;
+    } catch (error) {
+      console.error('JWT Decode Error:', error);
+      return null;
+    }
+  }, []);
+
+  const handlePayment = async (amount, bulkMailCount, planName) => {
+    if (!userId) {
+      console.log("User Id is not present")
+      return;
+    }
+
     try {
       const res = await axios.post(
         'http://localhost:3000/api/payments/create_order',
-        {
-          amount,
-          user_id: userId,
-        },
+        { amount, user_id: userId },
         { withCredentials: true }
       );
 
@@ -34,15 +51,17 @@ const Package = ({ userId }) => {
         order_id,
         handler: async function (response) {
           const verifyRes = await axios.post(
-            'http://localhost:3000/api/payments/verify',
+            'http://localhost:3000/api/payments/verify_payment',
             {
               order_id,
               payment_id: response.razorpay_payment_id,
               signature: response.razorpay_signature,
               user_id: userId,
+              plan_name: planName.toLowerCase(),
             },
             { withCredentials: true }
           );
+
           alert(verifyRes.data.message || 'Subscription Activated!');
         },
         theme: {
@@ -59,21 +78,9 @@ const Package = ({ userId }) => {
   };
 
   const packages = [
-    {
-      name: 'Basic',
-      price: 10000, 
-      mails: 5,
-    },
-    {
-      name: 'Standard',
-      price: 300, // ₹300
-      mails: 50,
-    },
-    {
-      name: 'Premium',
-      price: 500, // ₹500
-      mails: 100,
-    },
+    { name: 'Basic', price: 10000, mails: 5 },
+    { name: 'Standard', price: 30000, mails: 50 },
+    { name: 'Premium', price: 50000, mails: 100 },
   ];
 
   return (
@@ -102,7 +109,9 @@ const Package = ({ userId }) => {
                     fullWidth
                     variant="contained"
                     color="primary"
-                    onClick={() => handlePayment(pkg.price, pkg.mails)}
+                    onClick={() =>
+                      handlePayment(pkg.price, pkg.mails, pkg.name)
+                    }
                   >
                     Buy {pkg.name}
                   </Button>

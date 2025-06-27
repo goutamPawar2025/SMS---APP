@@ -1,5 +1,6 @@
 class User < ApplicationRecord
-  
+    attribute :email_credits, :integer, default: 0
+
     before_create :generate_jti
 
   devise :database_authenticatable, :registerable,

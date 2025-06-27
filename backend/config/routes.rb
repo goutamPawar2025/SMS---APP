@@ -24,7 +24,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     post 'payments/create_order', to: 'payments#create_order'
-    post 'payments/verify', to: 'payments#verify_payment'
+    post 'payments/verify_payment', to: 'payments#verify_payment'
     post 'contacts/import_csv', to: 'contacts#import_csv'
     get 'dashboard/email_count', to: 'dashboard#email_count'
     resources :subscriptions, only: [:index, :create, :show, :update, :destroy]

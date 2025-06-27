@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_26_120215) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_27_123841) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -164,6 +164,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_26_120215) do
     t.datetime "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "credits"
+    t.string "plan_name"
+    t.string "payment_id"
     t.index ["user_id"], name: "index_subscriptions_on_user_id"
   end
 
@@ -192,6 +195,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_26_120215) do
     t.string "provider"
     t.string "uid"
     t.string "jti"
+    t.integer "email_credits"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
