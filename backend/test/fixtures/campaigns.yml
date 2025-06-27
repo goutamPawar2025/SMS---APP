@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  message_content: MyText
+  channel: 1
+  scheduled_at: 2025-06-16 12:18:55
+  is_auto_monthly: false
+  created_at: 2025-06-16 12:18:55
+  status: 1
+  user: one
+  template: one
+
+two:
+  message_content: MyText
+  channel: 1
+  scheduled_at: 2025-06-16 12:18:55
+  is_auto_monthly: false
+  created_at: 2025-06-16 12:18:55
+  status: 1
+  user: two
+  template: two
