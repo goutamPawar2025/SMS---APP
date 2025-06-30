@@ -18,7 +18,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import SendIcon from '@mui/icons-material/Send';
 import SaveIcon from '@mui/icons-material/Save';
 import AddIcon from '@mui/icons-material/Add';
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from 'react-toastify';
 
 
 export default function UploadForm() {
@@ -60,8 +60,7 @@ export default function UploadForm() {
           'Content-Type': 'multipart/form-data',
         },
       });
-
-
+ 
     toast.success('Emails sent successfully!', {
       position: 'top-right',
       autoClose: 3000,

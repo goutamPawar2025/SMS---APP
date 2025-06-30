@@ -2,12 +2,10 @@ class Api::PaymentsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   def create_order
-    Rails.logger.info "🔵 Received params: #{params.inspect}"
 
     amount = params[:amount].to_i
     amount_paise = amount * 100
 
-    Rails.logger.info "💰 Amount in INR: #{amount} | Amount in paise: #{amount_paise}"
 
     if amount <= 0
       render json: { error: 'Invalid amount' }, status: :unprocessable_entity and return

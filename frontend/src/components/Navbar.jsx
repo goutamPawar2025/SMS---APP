@@ -10,8 +10,6 @@ import {
   ListItemText,
   CssBaseline,
   Box,
-  Divider,
-  IconButton,
   InputBase,
   Avatar,
   Chip,
@@ -20,7 +18,6 @@ import {
 import {
   Dashboard,
   Sms,
-  WhatsApp,
   Settings,
   Payment,
   Contacts,
@@ -32,7 +29,7 @@ import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import { useNavigate, NavLink } from "react-router-dom";
 import axios from "axios";
-import * as jwt from 'jwt-decode'; // named import
+import * as jwt from "jwt-decode";
 
 const drawerWidth = 240;
 
@@ -50,48 +47,40 @@ const menuItems = [
 const MainLayout = ({ children }) => {
   const navigate = useNavigate();
   const [credits, setCredits] = useState(0);
+
   const handleLogout = () => {
- 
     localStorage.removeItem("user_id");
     navigate("/login");
   };
 
- useEffect(() => {
   const fetchCredits = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const decoded = jwt.jwtDecode(token);
       const userId = decoded.user_id;
 
-      if (!userId) {
-        console.warn("No user_id found");
-        return;
-      }
+      if (!userId) return;
 
       const response = await axios.get(
         `http://localhost:3000/api/subscriptions/${userId}`
       );
 
-      console.log("Credits API response:", response.data);
-
-       const activeSub = response.data.find(sub => sub.status === 1);
-      const credits = activeSub ? activeSub.credits : 0;
-
-      setCredits(credits);
+      const activeSub = response.data.find((sub) => sub.status === 1);
+      setCredits(activeSub ? activeSub.credits : 0);
     } catch (error) {
       console.error("Error fetching credits:", error);
     }
   };
 
-  fetchCredits();
-}, []);
-
+  useEffect(() => {
+    fetchCredits();
+    const interval = setInterval(fetchCredits, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-
-      {/* Top Navbar */}
       <AppBar
         position="fixed"
         elevation={0}
@@ -137,7 +126,6 @@ const MainLayout = ({ children }) => {
         </Toolbar>
       </AppBar>
 
-      {/* Sidebar */}
       <Drawer
         variant="permanent"
         sx={{
@@ -178,7 +166,6 @@ const MainLayout = ({ children }) => {
         </Box>
       </Drawer>
 
-      {/* Main Content */}
       <Box
         component="main"
         sx={{
