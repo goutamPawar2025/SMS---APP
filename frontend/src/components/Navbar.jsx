@@ -71,7 +71,6 @@ const MainLayout = ({ children }) => {
 
       const plans = response.data.plans || ["No Active Plan"];
         const lastPlan = plans.length > 0 ? plans[plans.length - 1] : null;
-           console.log("Last plan:", lastPlan);
            setlastPlan(lastPlan)
 
 
@@ -118,14 +117,48 @@ const MainLayout = ({ children }) => {
               <Search sx={{ mr: 1 }} />
               <InputBase placeholder="Search..." />
             </Box>
-              <Chip
-              label={`${lastPlan !== null ? lastPlan : "Loading..."}`}
-              color="success"
-            />
-            <Chip
-              label={`Credits: ${credits !== null ? credits : "Loading..."}`}
-              color="warning"
-            />
+
+
+
+
+
+
+
+
+ {credits === 0 && lastPlan !== null ? (
+        <Button
+          variant="outlined"
+          color="success"
+          onClick={() => navigate('/packages')}
+          sx={{ mt: 0 }}
+        >
+          Buy Premium
+        </Button>
+      ) : (
+        <Chip
+          label={`${lastPlan !== null ? lastPlan : "Loading..."}`}
+          color="success"
+        />
+      )}
+
+      <Chip
+        label={`Credits: ${credits !== null ? credits : "Loading..."}`}
+        color="warning"
+        sx={{ ml: 1 }}
+      />
+
+
+
+
+
+
+
+
+
+
+
+
+
             <Avatar alt="User" />
             <Button
               variant="outlined"

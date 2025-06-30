@@ -54,9 +54,16 @@ export default function UploadForm() {
   };
 
   const handleFileUpload = async () => {
+      const token = localStorage.getItem('token');
+      const decoded = jwtDecode(token);
+      const userId = decoded.user_id;
+
     const data = new FormData();
     data.append('file', file);
     data.append('message', message);
+    data.append('user_id', userId);
+
+
 
     try {
       setLoading(true);
@@ -83,9 +90,14 @@ export default function UploadForm() {
 
     try {
       setLoading(true);
+       const token = localStorage.getItem('token');
+      const decoded = jwtDecode(token);
+      const userId = decoded.user_id;
+
       const formData = new FormData();
       emails.forEach((email) => formData.append('emails[]', email));
       formData.append('message', message);
+       formData.append('user_id', userId);
 
       const res = await axios.post('http://localhost:3000/emails/upload', formData, {
         headers: {
