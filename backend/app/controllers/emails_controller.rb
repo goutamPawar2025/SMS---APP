@@ -14,7 +14,7 @@ class EmailsController < ApplicationController
                 else
                   return render json: { error: 'Email is required — please upload a file or provide emails.' }, status: :unprocessable_entity
                 end
-
+      count = addresses.count
     addresses.each do |email|
       BulkMailer.send_bulk_email(email, message).deliver_later
     end
