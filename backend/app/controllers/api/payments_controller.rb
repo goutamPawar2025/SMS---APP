@@ -4,7 +4,7 @@ class Api::PaymentsController < ApplicationController
   def create_order
 
     amount = params[:amount].to_i
-    amount_paise = amount * 100
+    amount_paise = amount * 1
 
 
     if amount <= 0

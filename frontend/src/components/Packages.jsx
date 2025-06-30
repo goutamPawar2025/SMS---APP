@@ -12,10 +12,10 @@ import {
   Button,
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
-
 import 'react-toastify/dist/ReactToastify.css';
+
 const Package = () => {
-   const userId = useMemo(() => {
+  const userId = useMemo(() => {
     const token = localStorage.getItem('token');
     if (!token) return null;
 
@@ -30,7 +30,7 @@ const Package = () => {
 
   const handlePayment = async (amount, bulkMailCount, planName) => {
     if (!userId) {
-      console.log("User Id is not present")
+      console.log("User Id is not present");
       return;
     }
 
@@ -63,14 +63,14 @@ const Package = () => {
             { withCredentials: true }
           );
 
-             toast.success(verifyRes.data.message || 'Subscription Activated!');        },
+          toast.success(verifyRes.data.message || 'Subscription Activated!');
+        },
         theme: {
           color: '#3399cc',
         },
       };
-       const updated = await axios.get(
-        `http://localhost:3000/api/subscriptions/${userId}`
-      );
+
+      await axios.get(`http://localhost:3000/api/subscriptions/${userId}`);
 
       const rzp = new window.Razorpay(options);
       rzp.open();
@@ -88,36 +88,64 @@ const Package = () => {
 
   return (
     <Navbar>
-            <ToastContainer />
-      <Box sx={{ p: 4 }}>
-        <Typography variant="h4" gutterBottom align="center">
-          Choose Your Plan
+      <ToastContainer />
+      <Box sx={{ p: 4, backgroundColor: '#121212', minHeight: '93vh' }}>
+        <Typography variant="h4" gutterBottom align="center" color="white">
+          Upgrade Your Plan
         </Typography>
         <Grid container spacing={4} justifyContent="center">
-          {packages.map((pkg) => (
-            <Grid item xs={12} sm={6} md={4} key={pkg.name}>
-              <Card sx={{ borderRadius: 3, boxShadow: 4 }}>
-                <CardContent>
+          {packages.map((pkg, index) => (
+            <Grid item xs={15} sm={6} md={4} key={pkg.name}>
+              <Card
+                sx={{
+                  borderRadius: 4,
+                  backgroundColor: '#1e1e1e',
+                  color: 'white',
+                  border: index === 1 ? '1px solid #10a37f' : '1px solid #333',
+                  boxShadow: index === 1 ? '0 0 20px rgba(16, 163, 127, 0.5)' : 'none',
+                  transition: 'transform 0.3s',
+                  '&:hover': { transform: 'translateY(-5px)' },
+                }}
+              >
+                <CardContent sx={{ textAlign: 'center' }}>
                   <Typography variant="h5" gutterBottom>
                     {pkg.name}
                   </Typography>
-                  <Typography variant="h6" color="text.secondary">
+                  {index === 1 && (
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        backgroundColor: '#10a37f',
+                        color: '#000',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: '12px',
+                      }}
+                    >
+                      Popular
+                    </Typography>
+                  )}
+                  <Typography variant="h4" sx={{ my: 2 }}>
                     ₹{pkg.price / 100}
                   </Typography>
-                  <Typography sx={{ mt: 2 }}>
-                    {pkg.mails} Bulk Emails
-                  </Typography>
+                  <Typography>{pkg.mails} Bulk Emails</Typography>
                 </CardContent>
-                <CardActions>
+                <CardActions sx={{ p: 2 }}>
                   <Button
                     fullWidth
                     variant="contained"
-                    color="primary"
+                    sx={{
+                      backgroundColor: '#10a37f',
+                      color: '#000',
+                      '&:hover': {
+                        backgroundColor: '#0e8f6e',
+                      },
+                    }}
                     onClick={() =>
                       handlePayment(pkg.price, pkg.mails, pkg.name)
                     }
                   >
-                    Buy {pkg.name}
+                    Get {pkg.name}
                   </Button>
                 </CardActions>
               </Card>
