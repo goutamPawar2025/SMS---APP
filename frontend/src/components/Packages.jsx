@@ -11,7 +11,9 @@ import {
   CardActions,
   Button,
 } from '@mui/material';
+import { toast, ToastContainer } from 'react-toastify';
 
+import 'react-toastify/dist/ReactToastify.css';
 const Package = () => {
    const userId = useMemo(() => {
     const token = localStorage.getItem('token');
@@ -19,7 +21,6 @@ const Package = () => {
 
     try {
       const decoded = jwt.jwtDecode(token);
-      console.log("This is ",decoded)
       return decoded.sub || decoded.user_id;
     } catch (error) {
       console.error('JWT Decode Error:', error);
@@ -62,12 +63,14 @@ const Package = () => {
             { withCredentials: true }
           );
 
-          alert(verifyRes.data.message || 'Subscription Activated!');
-        },
+             toast.success(verifyRes.data.message || 'Subscription Activated!');        },
         theme: {
           color: '#3399cc',
         },
       };
+       const updated = await axios.get(
+        `http://localhost:3000/api/subscriptions/${userId}`
+      );
 
       const rzp = new window.Razorpay(options);
       rzp.open();
@@ -85,6 +88,7 @@ const Package = () => {
 
   return (
     <Navbar>
+            <ToastContainer />
       <Box sx={{ p: 4 }}>
         <Typography variant="h4" gutterBottom align="center">
           Choose Your Plan

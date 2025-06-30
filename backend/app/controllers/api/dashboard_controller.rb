@@ -3,7 +3,6 @@ class Api::DashboardController < ApplicationController
   before_action :authenticate_user! # Devise/JWT ke hisaab se
 
   def email_count
-    binding.pry
     sent_count = current_user.emails.where(status: 'sent').count
     failed_count = current_user.emails.where(status: 'failed').count
     total = current_user.emails.count

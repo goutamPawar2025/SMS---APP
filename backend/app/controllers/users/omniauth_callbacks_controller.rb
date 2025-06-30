@@ -1,7 +1,6 @@
 
   class  Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     def google_oauth2
-      binding.pry
       auth = request.env['omniauth.auth']
      puts "inside here"
       @user = User.find_or_create_by(email: auth.info.email) do |user|

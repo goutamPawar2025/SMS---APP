@@ -6,6 +6,12 @@ class Api::SubscriptionsController < ApplicationController
     render json: subscriptions
   end
 
+ def show
+    user_id = params[:id]
+    subscriptions = Subscription.where(user_id: user_id)
+    render json: subscriptions, status: :ok
+   end
+
    def create
     subscription = Subscription.new(subscription_params)
 

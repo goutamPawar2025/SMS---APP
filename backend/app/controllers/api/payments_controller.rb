@@ -1,10 +1,20 @@
 class Api::PaymentsController < ApplicationController
   skip_before_action :verify_authenticity_token
 
-   def create_order
-    amount = params[:amount].to_i * 100
-    order = ::Razorpay::Order.create(
-      amount: amount,
+  def create_order
+    Rails.logger.info "🔵 Received params: #{params.inspect}"
+
+    amount = params[:amount].to_i
+    amount_paise = amount * 100
+
+    Rails.logger.info "💰 Amount in INR: #{amount} | Amount in paise: #{amount_paise}"
+
+    if amount <= 0
+      render json: { error: 'Invalid amount' }, status: :unprocessable_entity and return
+    end
+
+    order = Razorpay::Order.create(
+      amount: amount_paise,
       currency: 'INR',
       receipt: "receipt_#{SecureRandom.hex(5)}",
       payment_capture: 1
@@ -12,15 +22,17 @@ class Api::PaymentsController < ApplicationController
 
     render json: {
       order_id: order.id,
-      razorpay_key: ENV['RAZORPAY_KEY_ID'] || 'rzp_test_zgjSSDynhauyTo',
+      razorpay_key: Rails.application.credentials.dig(:razorpay, :key_id),
       amount: order.amount,
       currency: order.currency
-    }
+    }, status: :ok
+
   rescue => e
+    Rails.logger.error e.backtrace.join("\n")
     render json: { error: 'Failed to create order', details: e.message }, status: :unprocessable_entity
   end
 
- def verify_payment
+  def verify_payment
   order_id   = params[:order_id]
   payment_id = params[:payment_id]
   signature  = params[:signature]
@@ -34,37 +46,50 @@ class Api::PaymentsController < ApplicationController
   )
 
   if generated_signature == signature
-  credits = case plan_name
-            when 'basic' then 5
-            when 'standard' then 50
-            when 'premium' then 100
-            else 0
-            end
+    credits = case plan_name
+              when 'basic' then 5
+              when 'standard' then 50
+              when 'premium' then 100
+              else 0
+              end
 
-  Subscription.create!(
-    user_id: user_id,
-    status: 1,
-    end_date: 1.month.from_now,
-    plan_name: plan_name,
-    payment_id: payment_id,
-    credits: credits
-  )
-  binding.pry
+    subscription = Subscription.find_by(
+      user_id: user_id,
+      plan_name: plan_name,
+    )
+    if subscription
+       subscription.credits += credits
 
-  render json: {
-    status: 'success',
-    message: "Payment verified. #{credits} credits added to subscription!"
-  }, status: :ok
-else
-  render json: {
-    status: 'failed',
-    message: 'Payment verification failed'
-  }, status: :unauthorized
-end
+       subscription.end_date = 1.month.from_now
+
+       subscription.payment_id = payment_id
+
+      subscription.save!
+    else
+
+      Subscription.create!(
+        user_id: user_id,
+        status: 1,
+        end_date: 1.month.from_now,
+        plan_name: plan_name,
+        payment_id: payment_id,
+        credits: credits
+      )
+    end
+
+    render json: {
+      status: 'success',
+      message: "Payment verified. #{credits} credits added"
+    }, status: :ok
+  else
+    render json: {
+      status: 'failed',
+      message: 'Payment verification failed'
+    }, status: :unauthorized
+  end
+
 rescue => e
-  Rails.logger.error "Verify payment failed: #{e.message}"
-  Rails.logger.error e.backtrace.join("\n")
+   Rails.logger.error e.backtrace.join("\n")
   render json: { error: 'Something went wrong', details: e.message }, status: :internal_server_error
 end
-
 end

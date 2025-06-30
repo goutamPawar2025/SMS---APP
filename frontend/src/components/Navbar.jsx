@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -28,9 +28,11 @@ import {
   Search,
   Logout,
 } from "@mui/icons-material";
-import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
-import MarkEmailReadIcon from '@mui/icons-material/MarkEmailRead';
+import AddToPhotosIcon from "@mui/icons-material/AddToPhotos";
+import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import { useNavigate, NavLink } from "react-router-dom";
+import axios from "axios";
+import * as jwt from 'jwt-decode'; // named import
 
 const drawerWidth = 240;
 
@@ -47,12 +49,43 @@ const menuItems = [
 
 const MainLayout = ({ children }) => {
   const navigate = useNavigate();
-
+  const [credits, setCredits] = useState(0);
   const handleLogout = () => {
-    // Add your logout logic here
-    localStorage.removeItem("authToken"); // or similar
+ 
+    localStorage.removeItem("user_id");
     navigate("/login");
   };
+
+ useEffect(() => {
+  const fetchCredits = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const decoded = jwt.jwtDecode(token);
+      const userId = decoded.user_id;
+
+      if (!userId) {
+        console.warn("No user_id found");
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:3000/api/subscriptions/${userId}`
+      );
+
+      console.log("Credits API response:", response.data);
+
+       const activeSub = response.data.find(sub => sub.status === 1);
+      const credits = activeSub ? activeSub.credits : 0;
+
+      setCredits(credits);
+    } catch (error) {
+      console.error("Error fetching credits:", error);
+    }
+  };
+
+  fetchCredits();
+}, []);
+
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -86,7 +119,10 @@ const MainLayout = ({ children }) => {
               <Search sx={{ mr: 1 }} />
               <InputBase placeholder="Search..." />
             </Box>
-            <Chip label="Credits: 50.00" color="warning" />
+            <Chip
+              label={`Credits: ${credits !== null ? credits : "Loading..."}`}
+              color="warning"
+            />
             <Avatar alt="User" />
             <Button
               variant="outlined"
@@ -129,7 +165,10 @@ const MainLayout = ({ children }) => {
                   color: isActive ? "#1976d2" : "#333",
                 })}
               >
-                <ListItem button selected={window.location.pathname === item.path}>
+                <ListItem
+                  button
+                  selected={window.location.pathname === item.path}
+                >
                   <ListItemIcon>{item.icon}</ListItemIcon>
                   <ListItemText primary={item.text} />
                 </ListItem>
