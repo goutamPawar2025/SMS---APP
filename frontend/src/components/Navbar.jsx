@@ -47,6 +47,8 @@ const menuItems = [
 const MainLayout = ({ children }) => {
   const navigate = useNavigate();
   const [credits, setCredits] = useState(0);
+  const [lastPlan, setlastPlan] = useState("No Active Plan");
+
 
   const handleLogout = () => {
     localStorage.removeItem("user_id");
@@ -60,13 +62,21 @@ const MainLayout = ({ children }) => {
       const userId = decoded.user_id;
 
       if (!userId) return;
-
+ 
       const response = await axios.get(
         `http://localhost:3000/api/subscriptions/${userId}`
       );
 
-      const activeSub = response.data.find((sub) => sub.status === 1);
-      setCredits(activeSub ? activeSub.credits : 0);
+        if(!response) return;
+
+      const plans = response.data.plans || ["No Active Plan"];
+        const lastPlan = plans.length > 0 ? plans[plans.length - 1] : null;
+           console.log("Last plan:", lastPlan);
+           setlastPlan(lastPlan)
+
+
+      const activeSub = response.data.total_credits;
+      setCredits(activeSub ? activeSub : 0);
     } catch (error) {
       console.error("Error fetching credits:", error);
     }
@@ -76,7 +86,7 @@ const MainLayout = ({ children }) => {
     fetchCredits();
     const interval = setInterval(fetchCredits, 5000);
     return () => clearInterval(interval);
-  }, []);
+  },[]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -108,6 +118,10 @@ const MainLayout = ({ children }) => {
               <Search sx={{ mr: 1 }} />
               <InputBase placeholder="Search..." />
             </Box>
+              <Chip
+              label={`${lastPlan !== null ? lastPlan : "Loading..."}`}
+              color="success"
+            />
             <Chip
               label={`Credits: ${credits !== null ? credits : "Loading..."}`}
               color="warning"

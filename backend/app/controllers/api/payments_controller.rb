@@ -5,8 +5,6 @@ class Api::PaymentsController < ApplicationController
 
     amount = params[:amount].to_i
     amount_paise = amount * 1
-
-
     if amount <= 0
       render json: { error: 'Invalid amount' }, status: :unprocessable_entity and return
     end
@@ -63,6 +61,7 @@ class Api::PaymentsController < ApplicationController
        subscription.payment_id = payment_id
 
       subscription.save!
+      binding.pry
     else
 
       Subscription.create!(

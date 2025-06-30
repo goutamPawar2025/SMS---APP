@@ -6,11 +6,28 @@ class Api::SubscriptionsController < ApplicationController
     render json: subscriptions
   end
 
- def show
-    user_id = params[:id]
-    subscriptions = Subscription.where(user_id: user_id)
-    render json: subscriptions, status: :ok
-   end
+def show
+  user_id = params[:id]
+  subscriptions = Subscription.where(user_id: user_id)
+
+  if subscriptions.present?
+    total_credits = subscriptions.sum(:credits)
+    plan_names = subscriptions.pluck(:plan_name).uniq
+
+    result = {
+      user_id: user_id.to_i,
+      total_credits: total_credits,
+      plans: plan_names,
+      start_date: subscriptions.minimum(:created_at),
+      end_date: subscriptions.maximum(:end_date)
+    }
+
+    render json: result, status: :ok
+  else
+    render json: { message: 'No subscriptions found' }, status: :not_found
+  end
+end
+
 
    def create
     subscription = Subscription.new(subscription_params)

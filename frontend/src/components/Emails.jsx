@@ -139,7 +139,7 @@ export default function UploadForm() {
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
                         if (selectedFile && !selectedFile.name.endsWith('.csv')) {
-                          alert('Only .csv files are allowed');
+                          toast.error('Only .csv files are allowed')
                           e.target.value = null;
                           return;
                         }
@@ -174,13 +174,20 @@ export default function UploadForm() {
               <Typography variant="subtitle1" gutterBottom>
                 Gmails to be sent:
               </Typography>
-              <Paper variant="outlined" sx={{ minHeight: 200, p: 2 }}>
-                <Box display="flex" flexWrap="wrap" gap={1}>
-                  {emails.map((email, idx) => (
-                    <Chip key={idx} label={email} color="info" />
-                  ))}
-                </Box>
-              </Paper>
+             <Paper variant="outlined" sx={{ minHeight: 200, p: 2 }}>
+  <Box display="flex" flexWrap="wrap" gap={1}>
+    {emails.map((email, idx) => (
+      <Chip
+        key={idx}
+        label={email}
+        color="info"
+        onDelete={() => {
+          setEmails(emails.filter((_, i) => i !== idx));
+        }}
+      />
+    ))}
+  </Box>
+</Paper>
             </Grid>
 
             <Grid item xs={12}>

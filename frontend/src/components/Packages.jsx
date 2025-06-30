@@ -70,7 +70,6 @@ const Package = () => {
         },
       };
 
-      await axios.get(`http://localhost:3000/api/subscriptions/${userId}`);
 
       const rzp = new window.Razorpay(options);
       rzp.open();
