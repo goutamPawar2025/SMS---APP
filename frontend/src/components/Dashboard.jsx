@@ -34,7 +34,6 @@ const Dashboard = () => {
       <Typography variant="h4" gutterBottom>Dashboard</Typography>
 
       <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ flexWrap: 'wrap' }}>
-        {/* Bar Chart */}
         <BarChart width={450} height={300} data={chartData}>
           <CartesianGrid strokeDasharray=" " />
           <XAxis dataKey="name" />

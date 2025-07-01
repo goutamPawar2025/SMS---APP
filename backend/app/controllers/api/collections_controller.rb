@@ -1,12 +1,12 @@
 module Api
   class CollectionsController < ApplicationController
+     
 
 
   def index
   collections = Collection.where(user_id: params[:user_id])
   render json: collections
 end
-
 
 
     def show
