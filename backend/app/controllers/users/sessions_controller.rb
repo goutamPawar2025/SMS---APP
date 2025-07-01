@@ -1,9 +1,9 @@
 class Users::SessionsController < Devise::SessionsController
-  respond_to :json
+before_action :authenticate_user!, except: [:create]
 
+   respond_to :json
 def create
   user = User.find_by(email: sign_in_params[:email])
-
   if user.nil?
     render json: {
       status: 404,

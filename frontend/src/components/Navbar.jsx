@@ -51,8 +51,8 @@ const MainLayout = ({ children }) => {
 
 
   const handleLogout = () => {
-    localStorage.removeItem("user_id");
-    navigate("/login");
+    localStorage.removeItem("token");
+    navigate("/login"); 
   };
 
   const fetchCredits = async () => {
@@ -118,13 +118,6 @@ const MainLayout = ({ children }) => {
               <InputBase placeholder="Search..." />
             </Box>
 
-
-
-
-
-
-
-
  {credits === 0 && lastPlan !== null ? (
         <Button
           variant="outlined"
@@ -146,19 +139,6 @@ const MainLayout = ({ children }) => {
         color="warning"
         sx={{ ml: 1 }}
       />
-
-
-
-
-
-
-
-
-
-
-
-
-
             <Avatar alt="User" />
             <Button
               variant="outlined"

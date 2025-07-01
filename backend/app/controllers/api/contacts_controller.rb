@@ -4,16 +4,35 @@ class Api::ContactsController < ApplicationController
   def index
     @contacts = Contact.all
     render json: @contacts
+   end
+
+def create
+  emails = params[:emails]
+  user_id = params[:user_id]
+
+  if emails.blank? || !emails.is_a?(Array)
+    render json: { error: 'Invalid emails array' }, status: :unprocessable_entity and return
   end
 
-  def create
-    @contact = Contact.new(contact_params)
-    if @contact.save
-      render json: @contact, status: :created
+  created_contacts = []
+  errors = []
+
+  emails.each do |email|
+    contact = Contact.new(email: email, user_id: user_id)
+    if contact.save
+      created_contacts << contact
     else
-      render json: { errors: @contact.errors.full_messages }, status: :unprocessable_entity
+      errors << { email: email, errors: contact.errors.full_messages }
     end
   end
+
+  if errors.any?
+    render json: { created: created_contacts, errors: errors }, status: :unprocessable_entity
+  else
+    render json: created_contacts, status: :created
+  end
+end
+
 
   def show
     @contact = Contact.find_by(id: params[:id])
@@ -76,13 +95,8 @@ class Api::ContactsController < ApplicationController
 
   def contact_params
     params.require(:contact).permit(
-      :name,
-      :phone_number,
-      :age,
-      :gender,
-      :is_blocked,
+      :emails,
       :user_id,
-      :collection_id
     )
   end
 end

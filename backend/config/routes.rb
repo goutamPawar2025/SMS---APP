@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     post '/login', to: 'user/sessions#create'
     delete '/logout', to: 'user/sessions#destroy'
     post '/emails/upload', to: 'emails#upload'
+
   end
 
 

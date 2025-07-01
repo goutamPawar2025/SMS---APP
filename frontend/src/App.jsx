@@ -5,6 +5,9 @@ import UploadCsv from "./pages/UploadCsv";
 import GoogleSuccess from "./pages/GoogleSuccess";
 import AuthCallback from "./pages/AuthCallback";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
+
+
 import Dashboard from "./components/Dashboard";
 import { ToastContainer, Bounce } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,7 +17,7 @@ import QuickSms from "./components/QuickySms";
 import Emails from "./components/Emails"
 import Template from "./components/Template"
 import Packages from "./components/Packages"
-
+import Contact from "./components/Contact"
 
 
 
@@ -35,9 +38,26 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Router>
+        
         <Routes>
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+       <Route
+  path="/signup"
+  element={
+    <PublicRoute>
+      <Signup />
+    </PublicRoute>
+  }
+/>
+
+<Route
+  path="/login"
+  element={
+    <PublicRoute>
+      <Login />
+    </PublicRoute>
+  }
+/>
+
           <Route path="/google_success" element={<GoogleSuccess />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
          
@@ -90,6 +110,17 @@ function App() {
             element={
               <ProtectedRoute>
                 <Packages />
+              </ProtectedRoute>
+            }
+          />
+
+
+
+                 <Route
+            path="/contacts"
+            element={
+              <ProtectedRoute>
+                <Contact />
               </ProtectedRoute>
             }
           />

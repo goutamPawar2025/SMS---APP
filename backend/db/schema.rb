@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_27_123841) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_01_072733) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -37,13 +37,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_123841) do
     t.index ["user_id"], name: "index_campaigns_on_user_id"
   end
 
+  create_table "collection_contacts", force: :cascade do |t|
+    t.integer "collection_id", null: false
+    t.integer "contact_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id"], name: "index_collection_contacts_on_collection_id"
+    t.index ["contact_id"], name: "index_collection_contacts_on_contact_id"
+  end
+
   create_table "collections", force: :cascade do |t|
     t.integer "user_id", null: false
-    t.integer "contact_id", null: false
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["contact_id"], name: "index_collections_on_contact_id"
     t.index ["user_id"], name: "index_collections_on_user_id"
   end
 
@@ -57,16 +64,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_123841) do
   end
 
   create_table "contacts", force: :cascade do |t|
-    t.string "name"
-    t.string "phone_number"
-    t.integer "age"
-    t.integer "gender"
-    t.boolean "is_blocked"
+    t.string "email", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "collection_id"
-    t.index ["collection_id"], name: "index_contacts_on_collection_id"
+    t.index ["user_id", "email"], name: "index_contacts_on_user_id_and_email", unique: true
     t.index ["user_id"], name: "index_contacts_on_user_id"
   end
 
@@ -201,10 +203,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_27_123841) do
 
   add_foreign_key "campaigns", "message_templates"
   add_foreign_key "campaigns", "users"
-  add_foreign_key "collections", "contacts"
+  add_foreign_key "collection_contacts", "collections"
+  add_foreign_key "collection_contacts", "contacts"
   add_foreign_key "collections", "users"
   add_foreign_key "complaints", "users"
-  add_foreign_key "contacts", "collections"
   add_foreign_key "contacts", "users"
   add_foreign_key "credits", "users"
   add_foreign_key "documents", "users"

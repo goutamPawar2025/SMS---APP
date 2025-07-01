@@ -1,4 +1,8 @@
 class Contact < ApplicationRecord
   belongs_to :user
-  belongs_to :collection, optional: true
+
+  has_many :collection_contacts, dependent: :destroy
+  has_many :collections, through: :collection_contacts
+
+  validates :email, presence: true, uniqueness: { scope: :user_id }
 end

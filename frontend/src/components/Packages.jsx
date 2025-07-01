@@ -33,14 +33,19 @@ const Package = () => {
       console.log("User Id is not present");
       return;
     }
-
+    const token = localStorage.getItem('token');
     try {
       const res = await axios.post(
-        'http://localhost:3000/api/payments/create_order',
-        { amount, user_id: userId },
-        { withCredentials: true }
-      );
-
+     'http://localhost:3000/api/payments/create_order',
+     { amount, user_id: userId },
+     {
+    headers: {
+         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+       },
+       withCredentials: true,
+    }
+       );
       const { order_id, razorpay_key, currency } = res.data;
 
       const options = {

@@ -8,20 +8,21 @@ Devise.setup do |config|
       prompt: 'select_account',
       access_type: 'offline'
     }
+    
+config.jwt do |jwt|
+  jwt.secret = Rails.application.credentials.secret_key_base
+  jwt.dispatch_requests = [
+    ['POST', %r{^/users/sign_in$}],
+    ['GET', %r{^/users/auth/google_oauth2/callback$}]
+  ]
+  jwt.revocation_requests = [
+    ['DELETE', %r{^/users/sign_out$}]
+  ]
+  jwt.expiration_time = 30.minutes.to_i
+end
 
-  config.jwt do |jwt|
-    jwt.secret = Rails.application.credentials.secret_key_base
-    jwt.dispatch_requests = [
-      ['POST', %r{^/login$}],
-      ['GET', %r{^/users/auth/google_oauth2/callback$}] 
-    ]
-    jwt.revocation_requests = [
-      ['DELETE', %r{^/logout$}]
-    ]
-    jwt.expiration_time = 30.minutes.to_i
-  end
 
-  config.navigational_formats = ['*/*', :html, :json] 
+  config.navigational_formats = ['*/*', :html, :json]
 
   config.mailer_sender = 'please-change-me-at-config-initializers-devise@example.com'
   require 'devise/orm/active_record'

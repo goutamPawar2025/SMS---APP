@@ -35,6 +35,41 @@ export default function UploadForm() {
   }, []);
 
 
+const handleSaveContacts = async () => {
+  if (emails.length === 0) {
+    toast.error('No emails to save.');
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const token = localStorage.getItem('token');
+    const decoded = jwtDecode(token);
+    const userId = decoded.user_id;
+
+    const payload = {
+      emails: emails,
+      user_id: userId,
+    };
+
+    await axios.post('http://localhost:3000/api/contacts', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    toast.success('Contacts saved successfully!');
+  } catch (error) {
+    console.error(error);
+    toast.error('Failed to save contacts.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
   const fetchCredits = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -53,29 +88,38 @@ export default function UploadForm() {
     }
   };
 
-  const handleFileUpload = async () => {
-      const token = localStorage.getItem('token');
-      const decoded = jwtDecode(token);
-      const userId = decoded.user_id;
+ const handleFileUpload = async () => {
+  const token = localStorage.getItem('token');
+  const decoded = jwtDecode(token);
+  const userId = decoded.user_id;
 
-    const data = new FormData();
-    data.append('file', file);
-    data.append('message', message);
-    data.append('user_id', userId);
+  const data = new FormData();
+  data.append('file', file);
+  data.append('message', message);
+  data.append('user_id', userId);
 
+  try {
+    setLoading(true);
 
+    const res = await axios.post(
+      'http://localhost:3000/emails/upload',
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+         },
+        withCredentials: true,
+      }
+    );
 
-    try {
-      setLoading(true);
-      const res = await axios.post('http://localhost:3000/emails/upload', data);
-      setEmails(res.data.emails || []);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to extract emails!');
-    } finally {
-      setLoading(false);
-    }
-  };
+    setEmails(res.data.emails || []);
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to extract emails!');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleSendEmails = async () => {
     if (credits === 0) {
@@ -288,9 +332,25 @@ export default function UploadForm() {
                 >
                   Send Emails
                 </Button>
-                <Button variant="outlined" startIcon={<SaveIcon />}>
-                  Save To Contacts
-                </Button>
+
+
+
+
+
+                <Button
+  variant="outlined"
+  startIcon={<SaveIcon />}
+  onClick={handleSaveContacts} // add this!
+  disabled={emails.length === 0}
+>
+  Save To Contacts
+</Button>
+
+
+
+
+
+                
               </Stack>
             </Grid>
           </Grid>

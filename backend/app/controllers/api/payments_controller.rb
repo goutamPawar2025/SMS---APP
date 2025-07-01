@@ -1,8 +1,7 @@
 class Api::PaymentsController < ApplicationController
-  skip_before_action :verify_authenticity_token
+before_action :authenticate_user!
 
   def create_order
-
     amount = params[:amount].to_i
     amount_paise = amount * 1
     if amount <= 0

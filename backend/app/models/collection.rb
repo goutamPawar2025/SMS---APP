@@ -1,4 +1,6 @@
 class Collection < ApplicationRecord
   belongs_to :user
-  belongs_to :contact
+
+  has_many :collection_contacts, dependent: :destroy
+  has_many :contacts, through: :collection_contacts
 end
