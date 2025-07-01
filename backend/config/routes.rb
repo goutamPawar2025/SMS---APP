@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     post 'payments/verify_payment', to: 'payments#verify_payment'
     post 'contacts/import_csv', to: 'contacts#import_csv'
     get 'dashboard/email_count', to: 'dashboard#email_count'
+    get 'validate_token', to: 'auth#validate_token'
     resources :subscriptions, only: [:index, :create, :show, :update, :destroy]
     resources :contacts, only: [:index, :create, :show, :update, :destroy]
     resources :campaigns, only: [:index, :create, :show, :update, :destroy]

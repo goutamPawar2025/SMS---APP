@@ -17,8 +17,7 @@ const CollectionsList = () => {
     }
   }, []);
 
-  // ✅ Fetch all collections for this user
-  useEffect(() => {
+   useEffect(() => {
     const fetchCollections = async () => {
       if (userId) {
         try {
@@ -32,8 +31,7 @@ const CollectionsList = () => {
     fetchCollections();
   }, [userId]);
 
-  // ✅ When user clicks a collection, fetch its contacts
-  const handleCollectionClick = async (collectionId) => {
+   const handleCollectionClick = async (collectionId) => {
     try {
       const res = await axios.get(`http://localhost:3000/api/collections/${collectionId}`);
       setSelectedCollection(res.data);

@@ -52,7 +52,7 @@ const MainLayout = ({ children }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/login"); 
+    navigate("/login");
   };
 
   const fetchCredits = async () => {
