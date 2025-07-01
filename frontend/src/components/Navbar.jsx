@@ -38,7 +38,7 @@ const menuItems = [
   { text: "Quick SMS", icon: <Sms />, path: "/quicksms" },
   { text: "Send Emails", icon: <MarkEmailReadIcon />, path: "/bulk-emails" },
   { text: "Templates", icon: <AddToPhotosIcon />, path: "/templates" },
-  { text: "Settings", icon: <Settings />, path: "/settings" },
+ 
   { text: "Mail Packages", icon: <Payment />, path: "/packages" },
   { text: "Contacts", icon: <Contacts />, path: "/contacts" },
   { text: "Help", icon: <Help />, path: "/help" },

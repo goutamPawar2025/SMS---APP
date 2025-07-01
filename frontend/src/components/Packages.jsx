@@ -47,8 +47,7 @@ const Package = () => {
     }
        );
       const { order_id, razorpay_key, currency } = res.data;
-
-      const options = {
+       const options = {
         key: razorpay_key,
         amount,
         currency,
@@ -62,10 +61,14 @@ const Package = () => {
               order_id,
               payment_id: response.razorpay_payment_id,
               signature: response.razorpay_signature,
-              user_id: userId,
               plan_name: planName.toLowerCase(),
             },
-            { withCredentials: true }
+            {  headers: {
+         Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+       },
+
+              withCredentials: true }
           );
 
           toast.success(verifyRes.data.message || 'Subscription Activated!');

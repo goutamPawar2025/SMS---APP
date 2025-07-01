@@ -146,6 +146,7 @@ const handleSaveContacts = async () => {
       const res = await axios.post('http://localhost:3000/emails/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+           Authorization: `Bearer ${token}`,
         },
       });
 
@@ -333,10 +334,6 @@ const handleSaveContacts = async () => {
                   Send Emails
                 </Button>
 
-
-
-
-
                 <Button
   variant="outlined"
   startIcon={<SaveIcon />}
@@ -345,12 +342,6 @@ const handleSaveContacts = async () => {
 >
   Save To Contacts
 </Button>
-
-
-
-
-
-                
               </Stack>
             </Grid>
           </Grid>

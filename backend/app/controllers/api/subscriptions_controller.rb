@@ -9,7 +9,6 @@ class Api::SubscriptionsController < ApplicationController
 def show
   user_id = params[:id]
   subscriptions = Subscription.where(user_id: user_id)
-
   if subscriptions.present?
     total_credits = subscriptions.sum(:credits)
     plan_names = subscriptions.pluck(:plan_name).uniq
