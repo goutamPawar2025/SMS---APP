@@ -1,6 +1,6 @@
 # app/controllers/api/v1/dashboard_controller.rb
 class Api::DashboardController < ApplicationController
-  before_action :authenticate_user! # Devise/JWT ke hisaab se
+  before_action :authenticate_user!
 
   def email_count
     sent_count = current_user.emails.where(status: 'sent').count

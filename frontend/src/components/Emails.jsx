@@ -34,7 +34,6 @@ export default function UploadForm() {
     fetchCredits();
   }, []);
 
-
 const handleSaveContacts = async () => {
   if (emails.length === 0) {
     toast.error('No emails to save.');
@@ -45,30 +44,44 @@ const handleSaveContacts = async () => {
     setLoading(true);
 
     const token = localStorage.getItem('token');
+    console.log(token)
+    if (!token) {
+      toast.error('User not authenticated.');
+      return;
+    }
+
     const decoded = jwtDecode(token);
     const userId = decoded.user_id;
-
-    const payload = {
+     const payload = {
       emails: emails,
       user_id: userId,
     };
 
-    await axios.post('http://localhost:3000/api/contacts', payload, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    console.log("Payload being sent:", payload);
+
+    await axios.post(
+      'http://localhost:3000/api/contacts',
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        withCredentials: true,
+      }
+    );
 
     toast.success('Contacts saved successfully!');
   } catch (error) {
-    console.error(error);
+    console.error('Error saving contacts:', error);
+    if (error.response) {
+      console.log('Server Response:', error.response.data);
+    }
     toast.error('Failed to save contacts.');
   } finally {
     setLoading(false);
   }
 };
-
-
 
   const fetchCredits = async () => {
     try {

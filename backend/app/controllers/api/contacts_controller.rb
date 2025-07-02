@@ -1,38 +1,41 @@
 class Api::ContactsController < ApplicationController
-  skip_before_action :verify_authenticity_token
+  before_action :authenticate_user!
 
   def index
-    @contacts = Contact.all
+    user_id = params[:user_id] || current_user.id
+    @contacts = Contact.where(user_id: user_id)
     render json: @contacts
-   end
-
-def create
-  emails = params[:emails]
-  user_id = params[:user_id]
-
-  if emails.blank? || !emails.is_a?(Array)
-    render json: { error: 'Invalid emails array' }, status: :unprocessable_entity and return
   end
 
-  created_contacts = []
-  errors = []
+  def create
+    emails = params[:emails]
+    user_id = params[:user_id] || current_user.id
 
-  emails.each do |email|
-    contact = Contact.new(email: email, user_id: user_id)
-    if contact.save
-      created_contacts << contact
-    else
-      errors << { email: email, errors: contact.errors.full_messages }
+    if emails.blank? || !emails.is_a?(Array)
+      render json: { error: 'Invalid emails array' }, status: :unprocessable_entity and return
     end
-  end
 
-  if errors.any?
-    render json: { created: created_contacts, errors: errors }, status: :unprocessable_entity
-  else
-    render json: created_contacts, status: :created
-  end
-end
+    created_contacts = []
+    errors = []
 
+    emails.each do |email|
+      contact = Contact.find_or_initialize_by(email: email, user_id: user_id)
+      if contact.new_record?
+        if contact.save
+          created_contacts << contact
+        else
+          errors << { email: email, errors: contact.errors.full_messages }
+        end
+      else
+        created_contacts << contact
+      end
+    end
+
+    render json: {
+      created: created_contacts,
+      errors: errors
+    }, status: errors.any? ? :unprocessable_entity : :created
+  end
 
   def show
     @contact = Contact.find_by(id: params[:id])
@@ -82,6 +85,8 @@ end
         end
       end
 
+      # Optionally save valid phones here too!
+
       render json: {
         phone_numbers: valid_phones.uniq,
         invalid_numbers: invalid_phones.uniq
@@ -94,9 +99,6 @@ end
   private
 
   def contact_params
-    params.require(:contact).permit(
-      :emails,
-      :user_id,
-    )
+    params.permit(:user_id, emails: [])
   end
 end
